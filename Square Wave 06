@@ -1,0 +1,67 @@
+#include <p18f4550.h> 
+#include <stdlib.h> 
+ 
+/*The following lines of code perform interrupt vector reloca on to work with the USB bootloader. 
+These must be 
+used with every applica on program to run as a USB applica on.*/ 
+void mer_isr(void); 
+ 
+extern void _startup (void); 
+#pragma code _RESET_INTERRUPT_VECTOR = 0x1000 
+void _reset (void) 
+{ 
+    _asm goto _startup _endasm 
+ 
+} 
+#pragma code 
+//The program execu on comes to this point when a mer interrupt is generated 
+#pragma code _HIGH_INTERRUPT_VECTOR = 0x1008 
+void high_ISR (void) 
+{ 
+     
+    _asm goto mer_isr _endasm    //The program is relocated to execute the interrupt rou ne 
+timer_iser 
+ 
+} 
+// 
+#pragma code 
+// 
+#pragma code _LOW_INTERRUPT_VECTOR = 0x1018 
+ void low_ISR (void) 
+{ 
+ 
+} 
+#pragma code 
+// This func on is executed as soon as the mer interrupt is generated due to mer overflow 
+#pragma interrupt mer_isr 
+void mer_isr(void) 
+{ 
+    TMR0H = 0XFF;                        
+    TMR0L = 0X00; 
+    PORTB = ~PORTB;                          
+    INTCONbits.TMR0IF = 0;               
+ 
+} 
+ 
+ 
+ 
+ 
+void main() 
+{    
+    ADCON1 = 0x0F;         
+     
+    TRISB = 0;                   
+    PORTB = 0xFF;               
+    T0CON = 0x00;                
+    TMR0H = 0xFF;                 
+    TMR0L = 0x00; 
+    INTCONbits.TMR0IF = 0;     
+    INTCONbits.TMR0IE = 1;       
+    T0CONbits.TMR0ON = 1;        
+    INTCONbits.GIE = 1;          
+ 
+    while(1);                     
+     
+} 
+ 
+ 
