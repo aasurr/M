@@ -1,0 +1,125 @@
+LCD DATA port----PORT D 
+signal port------PORT E 
+rs-------RE0 
+rw-------RE1 
+en-------RE2 
+*/ 
+#include <p18f4550.h> 
+//LCD data pins connected to PORTD and control pins connected to PORTE 
+#define LCD_DATA    PORTD               
+#define ctrl        
+#define en          
+PORTE               
+//LCD data port 
+//LCD signal port 
+PORTEbits.RE2      // enable signal 
+#define rw          
+#define rs          
+#define BUSY        
+PORTEbits.RE1      // read/write signal 
+PORTEbits.RE0     // register select signal 
+PORTDbits.RD7 
+//LCD func on defini ons 
+void LCD_Busy(void); 
+void LCD_cmd(unsigned char cmd); 
+void init_LCD(void); 
+void LCD_write(unsigned char data); 
+void LCD_write_string(sta c char *str); 
+/*The following lines of code perform interrupt vector reloca on to work with the USB bootloader. 
+These must be 
+used with every applica on program to run as a USB applica on.*/ 
+extern void _startup (void); 
+#pragma code _RESET_INTERRUPT_VECTOR = 0x1000 
+void _reset (void) 
+{ 
+_asm goto _startup _endasm 
+} 
+#pragma code 
+#pragma code _HIGH_INTERRUPT_VECTOR = 0x1008 
+void high_ISR (void) 
+{ 
+} 
+#pragma code 
+#pragma code _LOW_INTERRUPT_VECTOR = 0x1018 
+void low_ISR (void) 
+{ 
+} 
+#pragma code 
+ 
+void myMsDelay (unsigned int me) 
+{ 
+        unsigned int i, j; 
+        for (i = 0; i < me; i++) 
+                for (j = 0; j < 710; j++); 
+} 
+ 
+ 
+void init_LCD(void) 
+{ 
+    LCD_cmd(0x38);       
+    myMsDelay(15); 
+ 
+    LCD_cmd(0x01);       
+    myMsDelay(15); 
+ 
+    LCD_cmd(0x0C);       
+    myMsDelay(15); 
+ 
+    LCD_cmd(0x80);       
+    myMsDelay(15); 
+ 
+             
+    return; 
+} 
+ 
+void LCD_cmd(unsigned char cmd) 
+{ 
+    LCD_DATA = cmd; 
+    rs = 0; 
+    rw = 0; 
+    en = 1; 
+    myMsDelay(15); 
+    en = 0; 
+    myMsDelay(15); 
+    return; 
+} 
+ 
+void LCD_write(unsigned char data) 
+{ 
+    LCD_DATA = data; 
+    rs = 1; 
+    rw = 0; 
+    en = 1; 
+    myMsDelay(15); 
+    en = 0; 
+    myMsDelay(15); 
+    return ; 
+} 
+ 
+void LCD_write_string(sta c char *str)    
+{ 
+    int i = 0; 
+    while (str[i] != 0) 
+    { 
+        LCD_write(str[i]);      
+        myMsDelay(15); 
+                i++; 
+    } 
+    return; 
+} 
+ 
+void main(void) 
+{      
+     char var1[] = "WELCOME"; 
+     ADCON1 = 0x0F;         
+     TRISD = 0x00;          
+     TRISE = 0x00;          
+     
+     
+     init_LCD();           
+     myMsDelay(50);        
+     LCD_write_string(var1); 
+     while (1); 
+} 
+ 
+ 
