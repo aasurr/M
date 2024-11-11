@@ -1,15 +1,17 @@
-#include	<reg51.h>	
-void	delay	(int	count)	
+#include<reg51.h>	
+void delay (int count)	
 {	
-int	i	,	j;	
-for	(	i=0	;	i<count	;	i++	)	
-for	(	j=0	;	j<count	;	j++	)	
+int	i,j;	
+for	(i=0;i<count;i++)	{
+for	(j=0;j<200;j++)	{
+}
+}
 }	
-void	main()	
+void main()	
 {	
 while(1)	
 {	
-P0	=	0xFF;	
+P0=0xFF;	
 delay(250);	
 P0=0x00;	
 delay(250);	
