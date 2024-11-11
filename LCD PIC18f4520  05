@@ -1,33 +1,16 @@
-LCD DATA port----PORT D 
-signal port------PORT E 
-rs-------RE0 
-rw-------RE1 
-en-------RE2 
-*/ 
 #include <p18f4550.h> 
-//LCD data pins connected to PORTD and control pins connected to PORTE 
 #define LCD_DATA    PORTD               
-#define ctrl        
-#define en          
-PORTE               
-//LCD data port 
-//LCD signal port 
-PORTEbits.RE2      // enable signal 
-#define rw          
-#define rs          
-#define BUSY        
-PORTEbits.RE1      // read/write signal 
-PORTEbits.RE0     // register select signal 
-PORTDbits.RD7 
-//LCD func on defini ons 
+#define ctrl   PORTE    
+#define en   PORTEbits.RE2         
+#define rw    PORTEbits.RE1        
+#define rs    PORTEbits.RE0        
+#define BUSY  PORTDbits.RD7       
+
 void LCD_Busy(void); 
 void LCD_cmd(unsigned char cmd); 
 void init_LCD(void); 
 void LCD_write(unsigned char data); 
 void LCD_write_string(sta c char *str); 
-/*The following lines of code perform interrupt vector reloca on to work with the USB bootloader. 
-These must be 
-used with every applica on program to run as a USB applica on.*/ 
 extern void _startup (void); 
 #pragma code _RESET_INTERRUPT_VECTOR = 0x1000 
 void _reset (void) 
